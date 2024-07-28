@@ -1,0 +1,44 @@
+const int switchPin = 2; 
+const int led1Pin = 9;   
+const int led2Pin = 10;  
+
+unsigned long pressStartTime = 0;
+bool switchPressed = false;
+bool led1State = false;
+bool led2State = false;
+
+void setup() {
+  pinMode(switchPin, INPUT_PULLUP); 
+  pinMode(led1Pin, OUTPUT);
+  pinMode(led2Pin, OUTPUT);
+}
+
+void loop() {
+  int switchState = digitalRead(switchPin);
+
+  if (switchState == LOW) {
+    if (!switchPressed) {
+      pressStartTime = millis();
+      switchPressed = true;
+    }
+  } else {
+    if (switchPressed) {
+      unsigned long pressDuration = millis() - pressStartTime;
+      switchPressed = false;
+
+      if (pressDuration >= 1000 && pressDuration < 3000) {
+        led1State = true;
+        led2State = false;
+      } else if (pressDuration >= 3000) {
+        led1State = false;
+        led2State = true;
+      } else {
+        led1State = false;
+        led2State = false;
+      }
+
+      digitalWrite(led1Pin, led1State ? HIGH : LOW);
+      digitalWrite(led2Pin, led2State ? HIGH : LOW);
+    }
+  }
+}
